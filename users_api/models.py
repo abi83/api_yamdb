@@ -7,14 +7,14 @@ User = get_user_model()
 
 
 class Role(models.Model):
-    class Roles(models.TextChoices):
+    class RolesChoices(models.TextChoices):
         USER = 'usr', 'User'
         MODERATOR = 'mdr', 'Moderator'
         ADMIN = 'adm', 'Admin'
-    name = models.CharField(max_length=3, choices=Roles.choices, default=Roles.USER)
+    name = models.CharField(max_length=3, choices=RolesChoices.choices, default=RolesChoices.USER)
 
 
 class YamdbUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(max_length=255,)
-    role = models.ForeignKey(Role, on_delete=models.SET_DEFAULT, default=Role.Roles.USER)
+    role = models.ForeignKey(Role, on_delete=models.SET_DEFAULT, default=Role.RolesChoices.USER)

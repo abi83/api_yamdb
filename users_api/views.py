@@ -13,8 +13,17 @@ class CreateUser(viewsets.ViewSetMixin,
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
 class ConfirmUser(viewsets.ViewSetMixin,
-                 mixins.CreateModelMixin,
-                 generics.GenericAPIView,):
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView,):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UsersViewSet(viewsets.ViewSetMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin,
+                   generics.GenericAPIView,):
     queryset = User.objects.all()
     serializer_class = UserSerializer

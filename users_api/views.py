@@ -1,14 +1,17 @@
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework.permissions import IsAdminUser
 
 from users_api.models import YamdbUser
 from users_api.serializers import UserSerializer
 
 
-class CreateUser(viewsets.ViewSetMixin,
-                 mixins.CreateModelMixin,
-                 generics.GenericAPIView,):
+class CreateUser(
+    viewsets.ViewSetMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView,
+):
     """
     Create user with POST request with email parameter.
     Wait for email confirmation code.
@@ -39,3 +42,7 @@ class UsersViewSet(viewsets.ViewSetMixin,
     queryset = YamdbUser.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    permission_classes = (IsAdminUser,)
+
+class UserSelf():
+    pass

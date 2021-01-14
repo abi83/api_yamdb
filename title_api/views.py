@@ -1,9 +1,10 @@
 import django_filters
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, permissions
-from title_api.models import Review
+from title_api.models import Review, Comment, Title, Category
 from title_api.permissions import AuthorPermissions
-from title_api.serializers import ReviewSerializer
+from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer
+
 
 # Elena, create your views here.
 
@@ -27,3 +28,38 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+
+class CommentViewSet(viewsets.ModelViewSet):
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        AuthorPermissions
+    ]
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        comment_obj = get_object_or_404(Review, pk=self.kwargs.get('review_id'), id=self.kwargs.get('review_id'))
+        return Comment.objects.filter(comment=comment_obj)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        AuthorPermissions
+    ]
+    serializer_class = TitleSerializer
+    queryset = Title.objects.all()
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        AuthorPermissions
+    ]
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(name=self.request.name)

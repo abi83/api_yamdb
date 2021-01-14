@@ -1,7 +1,7 @@
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from users_api.models import YamdbUser
 from users_api.serializers import UserSerializer
@@ -44,5 +44,13 @@ class UsersViewSet(viewsets.ViewSetMixin,
     lookup_field = 'username'
     permission_classes = (IsAdminUser,)
 
-class UserSelf():
-    pass
+
+class UserSelf(viewsets.ViewSetMixin,
+               mixins.RetrieveModelMixin,
+               generics.GenericAPIView, ):
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        breakpoint()
+        return YamdbUser.objects.filter(username=self.request.user.username)

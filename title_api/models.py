@@ -9,7 +9,6 @@ User = get_user_model()
 
 # Lidia, create your models here.
 
-
 class Review(models.Model):
 
     author = models.ForeignKey(
@@ -19,7 +18,7 @@ class Review(models.Model):
     )
     pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
     score = models.IntegerField(
-        default=1,
+        blank=True,
         validators=[MaxValueValidator(10), MinValueValidator(1)]
      )
     text = models.TextField()

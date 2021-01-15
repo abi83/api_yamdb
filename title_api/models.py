@@ -62,10 +62,15 @@ class Title(models.Model):
         related_name='titles'
     )
 
+    class Meta:
+        ordering = ['genre', 'name', 'year']
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=80)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
-

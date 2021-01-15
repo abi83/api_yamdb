@@ -24,7 +24,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    # author = serializers.ReadOnlyField(source='author.username')
     name = serializers.CharField()
 
     class Meta:

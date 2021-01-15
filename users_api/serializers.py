@@ -18,16 +18,20 @@ class MeSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
-        """Convert `username` to lowercase."""
         ret = super().to_representation(instance)
-        ret['role'] = ret['role']
+        ret['role'] = str(ret['role'])[9:].split("'")[0]
+        return ret
+
+    def to_internal_value(self, data):
+        ret = super().to_representation(data)
+        ret['role'] = self.Meta.model.USER
         return ret
 
 
     # def get_role(self, obj):
     #     breakpoint()
     #     return obj.role[9:].split("'")[0]
-    # role2 = serializers.ChoiceField(choices=YamdbUser.CHOICES)
+    role = serializers.ChoiceField(choices=YamdbUser.CHOICES)
     # role = serializers.SerializerMethodField(read_only=True, source='get_role')
 
     class Meta:

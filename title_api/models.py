@@ -48,11 +48,13 @@ class Category(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=80)
-    genre = models.CharField(max_length=80)
+    genre = models.CharField(max_length=80)  # TODO: должен быть ManyToMany
     year = models.IntegerField(
         'Год выпуска',
         db_index=True,
     )
+    # TODO: Год выпуска надо конечно надо ограничение,
+    #  чтобы нельзя было меньше 1900 ввести и более 2030 скажем
     description = models.TextField(blank=True, null=True)
     categories = models.ForeignKey(
         Category,
@@ -68,6 +70,7 @@ class Title(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=80)
+    slug = models.SlugField(unique=True)
 
     class Meta:
         ordering = ['name']

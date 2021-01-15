@@ -10,7 +10,7 @@ router.register(prefix='auth/token', viewset=ConfirmUser, basename='confirm-regi
 router.register(prefix='users', viewset=UsersViewSet, basename='users')
 
 urlpatterns = [
-    path(r'v1/users/me/', UserSelf.as_view(), name='user-detail'),
+    path('v1/users/me/', UserSelf.as_view(), name='user-detail'),
     path('v1/', include(router.urls)),
 ]
 

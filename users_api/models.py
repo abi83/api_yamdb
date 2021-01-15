@@ -11,3 +11,6 @@ class YamdbUser(AbstractUser):
 
     bio = models.CharField(max_length=255, blank=True)
     role = models.CharField(max_length=3, choices=CHOICES, default=USER)
+
+    class Meta:
+        ordering = ('-id',)

@@ -1,7 +1,10 @@
 import django_filters
 from django.shortcuts import render, get_object_or_404
-from rest_framework import viewsets, permissions
-from title_api.models import Review, Comment, Title, Category
+from requests import Response
+from rest_framework import viewsets, permissions, status
+from rest_framework.templatetags.rest_framework import data
+
+from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
 from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer
 
@@ -63,3 +66,13 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(name=self.request.name)
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        AuthorPermissions
+    ]
+    serializer_class = TitleSerializer
+    queryset = Genre.objects.all()
+

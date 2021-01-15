@@ -62,3 +62,11 @@ class Title(models.Model):
         null=True,
         related_name='titles'
     )
+
+
+class Genre(models.Model):
+    name = models.CharField(max_length=80)
+
+    def __str__(self):
+        return self.name
+

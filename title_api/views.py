@@ -1,8 +1,6 @@
 import django_filters
-from django.shortcuts import render, get_object_or_404
-from requests import Response
-from rest_framework import viewsets, permissions, status
-from rest_framework.templatetags.rest_framework import data
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, permissions
 
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
@@ -43,14 +41,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment_obj = get_object_or_404(Review, pk=self.kwargs.get('review_id'), id=self.kwargs.get('review_id'))
         return Comment.objects.filter(comment=comment_obj)
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
 
 class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        AuthorPermissions
     ]
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
@@ -59,13 +53,9 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        AuthorPermissions
     ]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-
-    def perform_create(self, serializer):
-        serializer.save(name=self.request.name)
 
 
 class GenreViewSet(viewsets.ModelViewSet):
@@ -75,4 +65,3 @@ class GenreViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = TitleSerializer
     queryset = Genre.objects.all()
-

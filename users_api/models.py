@@ -14,3 +14,13 @@ class YamdbUser(AbstractUser):
 
     class Meta:
         ordering = ('-id',)
+
+
+# DB Index
+# email uniq
+# USER_REGISTRATION = email
+#
+
+# django rest framework simple jwt!!!
+# class: Token -> def for_user():
+#

@@ -9,15 +9,17 @@ from title_api.views import ReviewViewSet, CommentViewSet, TitleViewSet, Categor
 
 router = DefaultRouter()
 
-router.register(
-    r'titles/(?P<title_id>\d+)/reviews',
-    ReviewViewSet, basename='review'
-)
+
 router.register('titles', TitleViewSet, basename='title')
 
 router.register('categories', CategoryViewSet, basename='category')
 
 router.register('genres', GenreViewSet, basename='genre')
+
+router.register(
+    r'titles/(?P<title_id>\d+)/reviews',
+    ReviewViewSet, basename='review'
+)
 
 router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',

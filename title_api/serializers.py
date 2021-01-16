@@ -35,7 +35,7 @@ class CategorySerializer(serializers.ModelSerializer):
     name = serializers.CharField()
 
     class Meta:
-        fields = ('name',)
+        fields = ('name', 'slug')
         model = Category
 
 
@@ -43,5 +43,5 @@ class GenreSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
 
     class Meta:
-        fields = ('name',)
+        fields = ('name', 'slug')
         model = Genre

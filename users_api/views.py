@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 
 from users_api.models import YamdbUser
 from users_api.serializers import UserSerializer, MeSerializer
+from users_api.permissions import IsYamdbAdmin
+
 
 
 class CreateUser(
@@ -36,6 +38,8 @@ class UsersViewSet(viewsets.ViewSetMixin,
                    mixins.RetrieveModelMixin,
                    mixins.CreateModelMixin,
                    mixins.ListModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
                    generics.GenericAPIView,):
     """
     Users List (for admin only), Send PATCH request to /api/v1/users/me/
@@ -44,7 +48,7 @@ class UsersViewSet(viewsets.ViewSetMixin,
     queryset = YamdbUser.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsYamdbAdmin, )
 
 
 class UserSelf(

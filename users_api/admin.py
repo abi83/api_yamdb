@@ -14,6 +14,9 @@ class YamdbUserForm(forms.ModelForm):
 
 @admin.register(YamdbUser)
 class YamdbUserAdmin(admin.ModelAdmin):
-    can_delete = False
     form = YamdbUserForm
+    list_display = ('username', 'pk', 'email', 'role',)
+    # readonly_fields = ('role',)
+    # can_delete = False
+
 

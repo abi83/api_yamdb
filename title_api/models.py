@@ -10,25 +10,6 @@ User = get_user_model()
 
 # Lidia, create your models here.
 
-class Review(models.Model):
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reviews'
-    )
-    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    score = models.IntegerField(
-        blank=True,
-        validators=[MaxValueValidator(10), MinValueValidator(1)]
-    )
-    text = models.TextField()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['id', 'author'],
-                                    name='unique_review')
-        ]
-
 
 class Comment(models.Model):
     author = models.ForeignKey(
@@ -92,3 +73,31 @@ class Title(models.Model):
 
     class Meta:
         ordering = ['name', 'year']
+
+
+class Review(models.Model):
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
+    score = models.IntegerField(
+        blank=True,
+        validators=[MaxValueValidator(10), MinValueValidator(1)]
+    )
+    text = models.TextField()
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='reviews',
+        unique=False
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['title', 'author'],
+                                    name='unique_review')
+        ]

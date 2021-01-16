@@ -15,7 +15,7 @@ from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSeri
 
 class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
+        permissions.IsAuthenticatedOrReadOnly, AuthorPermissions
     ]
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
@@ -26,7 +26,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Review.objects.filter(title=title_id)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title_id)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

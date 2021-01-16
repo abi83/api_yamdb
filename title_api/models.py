@@ -5,9 +5,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-# Elena, create your models here
-
-
 # Lidia, create your models here.
 
 

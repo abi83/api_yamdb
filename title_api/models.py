@@ -42,7 +42,7 @@ class Category(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=80)
-    slug = models.CharField(max_length=200, unique=True, blank=True, null=True)
+    slug = models.SlugField(unique=True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -52,28 +52,36 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=80)
-    genre = models.ManyToManyField(Genre)  # TODO: должен быть ManyToMany
-    year = models.IntegerField(
-        'Год выпуска',
-        db_index=True,
+    name = models.TextField(
+        max_length=100,
     )
-    # TODO: Год выпуска надо конечно надо ограничение,
-    #  чтобы нельзя было меньше 1900 ввести и более 2030 скажем
-    description = models.TextField(blank=True, null=True)
+    year = models.IntegerField()
+    description = models.TextField(
+        max_length=500,
+        null=True,
+        blank=True
+    )
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles',
+        null=True,
+        blank=True
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
         related_name='titles',
-        unique=False
+        null=True,
+        blank=True
     )
 
     class Meta:
         ordering = ['name', 'year']
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
 
+    def __str__(self):
+        return self.name
 
 class Review(models.Model):
     author = models.ForeignKey(
@@ -101,3 +109,4 @@ class Review(models.Model):
             models.UniqueConstraint(fields=['title', 'author'],
                                     name='unique_review')
         ]
+

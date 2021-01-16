@@ -39,6 +39,9 @@ class Comment(models.Model):
     text = models.TextField()
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 
+    class Meta:
+        ordering = ['author']
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -68,6 +71,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=80)
     genre = models.ManyToManyField(Genre)  # TODO: должен быть ManyToMany
     year = models.IntegerField(

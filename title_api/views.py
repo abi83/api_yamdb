@@ -1,7 +1,7 @@
 import django_filters
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, permissions, request, filters 
+from rest_framework import viewsets, permissions, filters
 
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
@@ -12,7 +12,6 @@ from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSeri
 
 
 # Lidia, create your views here.
-from users_api.permissions import IsYamdbModerator, IsYamdbAdmin
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -34,8 +33,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsYamdbAdmin | IsYamdbModerator | AuthorPermissions
+        permissions.IsAuthenticatedOrReadOnly,  AuthorPermissions
     ]
     serializer_class = CommentSerializer
 

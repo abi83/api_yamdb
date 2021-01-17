@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from users_api.models import YamdbUser
+# from users_api.models import YamdbUser
 
 
 class IsYamdbAdmin(permissions.BasePermission):

@@ -1,6 +1,6 @@
 import django_filters
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, permissions, request
+from rest_framework import viewsets, permissions, request, filters 
 
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
@@ -61,6 +61,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
     ]
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['=name', ]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
 

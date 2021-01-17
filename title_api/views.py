@@ -11,6 +11,7 @@ from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSeri
 
 
 # Lidia, create your views here.
+from users_api.permissions import IsYamdbModerator, IsYamdbAdmin
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -33,16 +34,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        AuthorPermissions
+        AuthorPermissions | IsYamdbAdmin | IsYamdbModerator
     ]
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        return Comment.objects.filter()
+        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        return Comment.objects.filter(title=title_id, review=review_id)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, title=title_id, review=review_id)
 
 
 class TitleViewSet(viewsets.ModelViewSet):

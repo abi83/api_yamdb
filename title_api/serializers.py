@@ -19,7 +19,7 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
-        fields = ('text', 'author', 'pub_date')
+        fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
 
 
@@ -27,7 +27,7 @@ class TitleSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
 
     class Meta:
-        fields = ('id', 'name', 'year')
+        fields = ('id', 'name', 'year', )
         model = Title
 
 

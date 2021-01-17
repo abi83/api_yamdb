@@ -86,14 +86,13 @@ class Review(models.Model):
         blank=True,
         null=True,
         related_name='reviews',
-        unique=False
     )
 
     class Meta:
         ordering = ['author']
         constraints = [
             models.UniqueConstraint(fields=['title', 'author'],
-                                    name='unique_review')
+                                    name='unique_review_title_author')
         ]
 
 

@@ -5,23 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-# Elena, create your models here
-
-
 # Lidia, create your models here.
-
-
-class Comment(models.Model):
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='comments',
-    )
-    text = models.TextField()
-    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-
-    class Meta:
-        ordering = ['author']
 
 
 class Category(models.Model):
@@ -83,6 +67,7 @@ class Title(models.Model):
     def __str__(self):
         return self.name
 
+
 class Review(models.Model):
     author = models.ForeignKey(
         User,
@@ -105,8 +90,38 @@ class Review(models.Model):
     )
 
     class Meta:
+        ordering = ['author']
         constraints = [
             models.UniqueConstraint(fields=['title', 'author'],
                                     name='unique_review')
         ]
 
+
+class Comment(models.Model):
+    id = models.AutoField(primary_key=True)
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='comments',
+        unique=False
+    )
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='comments',
+        unique=False
+    )
+    text = models.TextField()
+    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
+
+    class Meta:
+        ordering = ['author']

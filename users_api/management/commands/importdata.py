@@ -16,14 +16,14 @@ class Command(BaseCommand):
             for row in reader:
                 row['bio'] = row.pop('description')
 
-                role_convertor = {
-                    'user': YamdbUser.USER,
-                    'admin': YamdbUser.ADMIN,
-                    'moderator': YamdbUser.MODERATOR
-                }
-                for role in role_convertor:
-                    if row['role'] == role:
-                        row['role'] = role_convertor[role]
+                # role_convertor = {
+                #     'user': YamdbUser.USER,
+                #     'admin': YamdbUser.ADMIN,
+                #     'moderator': YamdbUser.MODERATOR
+                # }
+                # for role in role_convertor:
+                #     if row['role'] == role:
+                #         row['role'] = role_convertor[role]
 
                 obj, created = YamdbUser.objects.get_or_create(**row)
                 if created:
@@ -56,3 +56,18 @@ class Command(BaseCommand):
 
                 else:
                     print(f'Genre object {obj} already exists')
+
+
+        with open(os.getcwd() + '/data/titles.csv', encoding='utf-8') as file:
+            categories = Category.objects.all()
+            reader = csv.DictReader(file)
+            for row in reader:
+                obj, created = Genre.objects.get_or_create(**row)
+                breakpoint()
+                if created:
+                    obj.save()
+                    print(f'Genre object {obj} was created')
+
+                else:
+                    print(f'Genre object {obj} already exists')
+

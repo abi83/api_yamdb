@@ -27,7 +27,7 @@ class TitleSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
 
     class Meta:
-        fields = ('id', 'name', 'year', )
+        fields = ('id', 'name', 'year')
         model = Title
 
 

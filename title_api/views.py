@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, request, filters 
 
@@ -34,7 +35,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        AuthorPermissions | IsYamdbAdmin | IsYamdbModerator
+        IsYamdbAdmin | IsYamdbModerator | AuthorPermissions
     ]
     serializer_class = CommentSerializer
 
@@ -55,6 +56,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
+
+    def get_queryset(self):
+        return Title.objects.annotate(
+            rating=Avg('reviews__score')
+        )
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

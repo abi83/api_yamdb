@@ -6,6 +6,7 @@ from rest_framework import viewsets, permissions, filters
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
 from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer
+from users_api.permissions import IsYamdbModerator, IsYamdbAdmin
 
 
 # Elena, create your views here.
@@ -16,11 +17,31 @@ from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSeri
 
 class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly, AuthorPermissions
+        # IsYamdbModerator,
+        AuthorPermissions,
+        permissions.IsAuthenticatedOrReadOnly,
+        # IsYamdbAdmin,
     ]
+
+    # permission_classes_by_action = {
+    #     'create': [permissions.IsAuthenticatedOrReadOnly],
+    #     'retrieve': [permissions.IsAuthenticatedOrReadOnly],
+    #     'update': [AuthorPermissions, ],
+    #     'partial_update': [AuthorPermissions, ],
+    #     'list': [permissions.IsAuthenticatedOrReadOnly],
+    #     'destroy': [AuthorPermissions, IsYamdbModerator]
+    # }
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, ]
+
+    # def get_permissions(self):
+    #     try:
+    #         # return permission_classes depending on `action`
+    #         return [permission() for permission in self.permission_classes_by_action[self.action]]
+    #     except KeyError:
+    #         # action is not set return default permission_classes
+    #         return [permission() for permission in self.permission_classes]
 
     def get_queryset(self):
         title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))

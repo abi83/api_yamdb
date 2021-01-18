@@ -5,9 +5,8 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework import mixins
 from rest_framework import generics
 
-
 from title_api.models import Review, Comment, Title, Category, Genre
-from title_api.permissions import AuthorPermissions
+from title_api.permissions import AuthorPermissions, IsAdminPermissions
 from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer
 from users_api.permissions import IsYamdbModerator, IsYamdbAdmin, IsYamdbCategoryAdmin
 
@@ -20,31 +19,13 @@ from users_api.permissions import IsYamdbModerator, IsYamdbAdmin, IsYamdbCategor
 
 class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        # IsYamdbModerator,
-        AuthorPermissions,
         permissions.IsAuthenticatedOrReadOnly,
-        # IsYamdbAdmin,
+        AuthorPermissions | IsAdminPermissions
     ]
 
-    # permission_classes_by_action = {
-    #     'create': [permissions.IsAuthenticatedOrReadOnly],
-    #     'retrieve': [permissions.IsAuthenticatedOrReadOnly],
-    #     'update': [AuthorPermissions, ],
-    #     'partial_update': [AuthorPermissions, ],
-    #     'list': [permissions.IsAuthenticatedOrReadOnly],
-    #     'destroy': [AuthorPermissions, IsYamdbModerator]
-    # }
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, ]
-
-    # def get_permissions(self):
-    #     try:
-    #         # return permission_classes depending on `action`
-    #         return [permission() for permission in self.permission_classes_by_action[self.action]]
-    #     except KeyError:
-    #         # action is not set return default permission_classes
-    #         return [permission() for permission in self.permission_classes]
 
     def get_queryset(self):
         title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
@@ -57,19 +38,17 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,  AuthorPermissions
+        permissions.IsAuthenticatedOrReadOnly, AuthorPermissions
     ]
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        return Comment.objects.filter(title=title_id, review=review_id)
+        return Comment.objects.filter(review=review_id)
 
     def perform_create(self, serializer):
-        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        serializer.save(author=self.request.user, title=title_id, review=review_id)
+        serializer.save(author=self.request.user, review=review_id)
 
 
 class TitleViewSet(viewsets.ModelViewSet):

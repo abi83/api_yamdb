@@ -1,7 +1,9 @@
+from django.db.models import Avg
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
+
 from title_api.models import Review, Comment, Title, Category, Genre
 from rest_framework.validators import UniqueValidator
-
 
 
 # Elena, create your serializers here
@@ -10,23 +12,21 @@ from rest_framework.validators import UniqueValidator
 # Lidia, create your serializers here.
 
 class ReviewSerializer(serializers.ModelSerializer):
+    title = serializers.ReadOnlyField(source='title.name')
     author = serializers.ReadOnlyField(source='author.username')
 
-    class Meta:
-        fields = ('id', 'text', 'author', 'score', 'pub_date',)
-        model = Review
-
     def validate(self, data):
-        """
-        Болванка!!!!
-
-        """
-        # TODO: Мы должны получить из реквеста review и пользователя
-        # TODO: проверить, что нет такого ревью у этого пользователя
-        if self.context['request'].user == data.get('following'):
-            raise serializers.ValidationError("You cant follow yourself")
+        request = self.context.get('request')
+        title_id = self.context.get('view').kwargs.get('title_id')
+        title = get_object_or_404(Title, pk=title_id)
+        if request.method != "PATCH" and Review.objects.filter(author=request.user, title=title).exists():
+            raise serializers.ValidationError("Validation error. Review object with current author and title already "
+                                              "exist!")
         return data
 
+    class Meta:
+        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date',)
+        model = Review
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -42,12 +42,11 @@ class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField(source='get_rating')
 
     def get_rating(self, obj):
-        # TODO: Получить obj (Title), получить все Review у данного Titile, высчитать
-        # TODO: среднее арифмитическое из всех Review.score
-        return 10
+        total_avg_rating = obj.reviews.aggregate(Avg('score'))
+        return total_avg_rating.get('score__avg', 0)
 
     class Meta:
-        fields = ('id', 'name', 'year', 'rating',)
+        fields = ('id', 'name', 'year', 'rating')
         model = Title
 
 
@@ -56,7 +55,6 @@ class CategorySerializer(serializers.ModelSerializer):
     slug = serializers.SlugField(
         validators=[UniqueValidator(queryset=Category.objects.all())]
     )
-
 
     class Meta:
         fields = ('name', 'slug')

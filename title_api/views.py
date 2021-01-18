@@ -2,11 +2,14 @@ import django_filters
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, filters
+from rest_framework import mixins
+from rest_framework import generics
+
 
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
 from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer
-from users_api.permissions import IsYamdbModerator, IsYamdbAdmin
+from users_api.permissions import IsYamdbModerator, IsYamdbAdmin, IsYamdbCategoryAdmin
 
 
 # Elena, create your views here.
@@ -82,14 +85,23 @@ class TitleViewSet(viewsets.ModelViewSet):
         )
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(
+    viewsets.ViewSetMixin,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView,
+):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
+        IsYamdbCategoryAdmin,
+        # permissions.IsAuthenticatedOrReadOnly,
+        # IsYamdbModerator,
     ]
     filter_backends = (filters.SearchFilter,)
     search_fields = ['=name', ]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+    lookup_field = 'slug'
 
 
 class GenreViewSet(viewsets.ModelViewSet):

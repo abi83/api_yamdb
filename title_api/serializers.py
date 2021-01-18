@@ -26,7 +26,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
 
@@ -45,7 +44,7 @@ class TitleSerializer(serializers.ModelSerializer):
         return 10
 
     class Meta:
-        fields = ('id', 'name', 'year', 'rating',)
+        fields = ('id', 'name', 'year', 'rating', )
         model = Title
 
 

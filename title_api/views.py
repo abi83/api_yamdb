@@ -2,6 +2,7 @@ import django_filters
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, filters
+from rest_framework.pagination import PageNumberPagination
 
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
@@ -40,14 +41,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        return Comment.objects.filter(title=title_id, review=review_id)
+        return Comment.objects.filter(review=review_id)
 
     def perform_create(self, serializer):
-        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        serializer.save(author=self.request.user, title=title_id, review=review_id)
+        serializer.save(author=self.request.user, review=review_id)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -61,6 +60,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
+        AuthorPermissions
     ]
     filter_backends = (filters.SearchFilter,)
     search_fields = ['name', ]

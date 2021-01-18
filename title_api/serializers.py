@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from title_api.models import Review, Comment, Title, Category, Genre
+from rest_framework.validators import UniqueValidator
+
 
 
 # Elena, create your serializers here
@@ -50,10 +52,15 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     name = serializers.CharField()
+    slug = serializers.SlugField(
+        validators=[UniqueValidator(queryset=Category.objects.all())]
+    )
+
 
     class Meta:
         fields = ('name', 'slug')
         model = Category
+        lookup_field = 'slug'
 
 
 class GenreSerializer(serializers.ModelSerializer):

@@ -5,9 +5,8 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework import mixins
 from rest_framework import generics
 
-
 from title_api.models import Review, Comment, Title, Category, Genre
-from title_api.permissions import AuthorPermissions
+from title_api.permissions import AuthorPermissions, IsAdminPermissions
 from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer
 from users_api.permissions import IsYamdbModerator, IsYamdbAdmin, IsYamdbCategoryAdmin
 
@@ -20,8 +19,8 @@ from users_api.permissions import IsYamdbModerator, IsYamdbAdmin, IsYamdbCategor
 
 class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        AuthorPermissions,
         permissions.IsAuthenticatedOrReadOnly,
+        AuthorPermissions | IsAdminPermissions
     ]
 
     queryset = Review.objects.all()
@@ -39,7 +38,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,  AuthorPermissions
+        permissions.IsAuthenticatedOrReadOnly, AuthorPermissions
     ]
     serializer_class = CommentSerializer
 

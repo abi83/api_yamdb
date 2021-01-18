@@ -83,10 +83,9 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        blank=True,
         null=False,
         related_name='reviews',
-        default=0
+        default=''
         # TODO: А разве у нас может Ревью существовать без ссылки на Title?
     )
 

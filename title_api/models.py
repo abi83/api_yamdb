@@ -86,6 +86,7 @@ class Review(models.Model):
         blank=True,
         null=True,
         related_name='reviews',
+        #TODO: А разве у нас может Ревью существовать без ссылки на Title?
     )
 
     class Meta:
@@ -111,6 +112,8 @@ class Comment(models.Model):
         related_name='comments',
         unique=False
     )
+    # TODO: А нам точно надо Title хранить в комментарии? Комментарий ведь к Review, а не к Тайтлу.
+    # TODO: Короче, в файле загрузки ссылка на статью не идет.
     review = models.ForeignKey(
         Review,
         on_delete=models.SET_NULL,

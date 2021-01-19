@@ -88,12 +88,14 @@ class EmailRegistrationSerializer(serializers.ModelSerializer):
     password = PasswordField(required=False)
     username_field = 'email'
 
-    def create(self, validated_data):
-        return YamdbUser.objects.create(
-            **validated_data,
-            password=make_password(None),
-            username=str(uuid1())
-        )
+    # def create(self, validated_data):
+    #     # breakpoint()
+    #     return YamdbUser.objects.create(
+    #         **validated_data,
+    #         password=make_password(None),
+    #         username=str(uuid1()),
+    #         is_active=False,
+    #     )
 
     # def validate_password(self, value):
     #     breakpoint()
@@ -107,4 +109,12 @@ class EmailRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserVerificationSerializer(TokenObtainPairSerializer):
-    pass
+    password = PasswordField(required=False)
+    confirmation_code = serializers.CharField(write_only=True)
+    username_field = 'email'
+
+    class Meta:
+        model = YamdbUser
+        fields = ['email', 'password', 'confirmation_code', ]
+
+

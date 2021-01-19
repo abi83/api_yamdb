@@ -1,6 +1,12 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 from django.db import models
+from django.db.models import signals
+from django.dispatch import receiver
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMessage
+
+
 from uuid import uuid1
 
 
@@ -72,10 +78,27 @@ class YamdbUser(AbstractUser):
     username = models.CharField(unique=False, max_length=31)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+    # activation_code = models.CharField(max_length=40, blank=True, null=True)
 
 
     objects = YamdbUserManager()
 
+@receiver(signals.post_save, sender=YamdbUser)
+def send_code(sender, instance, created, **kwargs):
+    code = default_token_generator.make_token(instance)
+    email = EmailMessage(
+    'Confirmation code',
+    f'Your confirmation code: {code}',
+    'from@example.com',
+    [f'{instance.email}', ],
+    # ['bcc@example.com'],
+    # reply_to=['another@example.com'],
+    # headers={'Message-ID': 'foo'},
+    )
+    email.send()
+    print('I am a reciever')
+    print(f'Code: {code}')
+    print(f'Sender: {sender}, instance: {instance}, created: {created}')
 
     # def __init__(self, *args, **kwargs):
     #     mkwargs = {}

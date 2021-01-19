@@ -16,8 +16,8 @@ urlpatterns = [
 
 
 urlpatterns += [
-    path('v1/auth/email/', CreateUser.as_view(), name='user-detail'),
-    path('v1/auth/token/', ConfirmUser.as_view(), name='user-detail'),
+    path('v1/auth/email/', CreateUser.as_view(), name='user-registration'),
+    path('v1/auth/token/', ConfirmUser.as_view(), name='confirm-user'),
 
 ]
 
@@ -28,7 +28,7 @@ from rest_framework_simplejwt.views import (
 
 
 urlpatterns += [
-    path('v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('v1/token/refresh/', TokenRefreshView.as_view(),
     #      name='token_refresh'),
 ]

@@ -7,9 +7,10 @@ from rest_framework import mixins
 from rest_framework import viewsets, permissions, filters
 from rest_framework.viewsets import ViewSetMixin
 
+from .filters import TitleFilter
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions, IsAdminPermissions
-from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer, \
+from title_api.serializers import ReviewSerializer, CommentSerializer, TitlePostSerializer, TitleViewSerializer, CategorySerializer, \
     GenreSerializer
 from users_api.permissions import IsYamdbCategoryAdmin
 
@@ -49,17 +50,17 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
         IsYamdbCategoryAdmin
     ]
-    serializer_class = TitleSerializer
-    queryset = Title.objects.all()
+    filterset_class = TitleFilter
 
-    def get_queryset(self):
-        return Title.objects.annotate(
-            rating=Avg('reviews__score')
-        ).order_by('name', 'year')
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return TitleViewSerializer
+        return TitlePostSerializer
 
 
 class CategoryViewSet(

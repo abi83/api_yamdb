@@ -33,39 +33,40 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    name = serializers.CharField()
-    slug = serializers.SlugField(
-        validators=[UniqueValidator(queryset=Category.objects.all())]
-    )
-
     class Meta:
-        fields = ('name', 'slug')
         model = Category
+        fields = ('name', 'slug')
         lookup_field = 'slug'
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()
-
-    def validate(self, data):
-        return data
-
     class Meta:
-        fields = ('name', 'slug')
         model = Genre
+        fields = ('name', 'slug')
+        lookup_field = 'slug'
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()
-    rating = serializers.SerializerMethodField(source='get_rating')
+class TitleViewSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
+    rating = serializers.FloatField()
 
-    # category = CategorySerializer()
-    # genre = GenreSerializer()
+    class Meta():
+        fields = '__all__'
+        model = Title
 
-    def get_rating(self, obj):
-        total_avg_rating = obj.reviews.aggregate(Avg('score'))
-        return total_avg_rating.get('score__avg', 0)
+
+class TitlePostSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        queryset=Genre.objects.all(),
+        slug_field='slug',
+        many=True
+    )
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field='slug',
+    )
 
     class Meta:
-        fields = ('id', 'name', 'year', 'rating', 'description')
+        fields = '__all__'
         model = Title

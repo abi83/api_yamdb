@@ -6,11 +6,6 @@ from title_api.models import Review, Comment, Title, Category, Genre
 from rest_framework.validators import UniqueValidator
 
 
-# Elena, create your serializers here
-
-
-# Lidia, create your serializers here.
-
 class ReviewSerializer(serializers.ModelSerializer):
     title = serializers.ReadOnlyField(source='title.name')
     author = serializers.ReadOnlyField(source='author.username')
@@ -37,19 +32,6 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()
-    rating = serializers.SerializerMethodField(source='get_rating')
-
-    def get_rating(self, obj):
-        total_avg_rating = obj.reviews.aggregate(Avg('score'))
-        return total_avg_rating.get('score__avg', 0)
-
-    class Meta:
-        fields = ('id', 'name', 'year', 'rating')
-        model = Title
-
-
 class CategorySerializer(serializers.ModelSerializer):
     name = serializers.CharField()
     slug = serializers.SlugField(
@@ -65,6 +47,25 @@ class CategorySerializer(serializers.ModelSerializer):
 class GenreSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
 
+    def validate(self, data):
+        return data
+
     class Meta:
         fields = ('name', 'slug')
         model = Genre
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+    rating = serializers.SerializerMethodField(source='get_rating')
+
+    # category = CategorySerializer()
+    # genre = GenreSerializer()
+
+    def get_rating(self, obj):
+        total_avg_rating = obj.reviews.aggregate(Avg('score'))
+        return total_avg_rating.get('score__avg', 0)
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'rating', 'description')
+        model = Title

@@ -1,20 +1,17 @@
 import django_filters
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, permissions, filters
-from rest_framework import mixins
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
+from rest_framework import mixins
+from rest_framework import viewsets, permissions, filters
+from rest_framework.viewsets import ViewSetMixin
 
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions, IsAdminPermissions
-from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer
-from users_api.permissions import IsYamdbModerator, IsYamdbAdmin, IsYamdbCategoryAdmin
-
-
-# Elena, create your views here.
-
-
-# Lidia, create your views here.
+from title_api.serializers import ReviewSerializer, CommentSerializer, TitleSerializer, CategorySerializer, \
+    GenreSerializer
+from users_api.permissions import IsYamdbCategoryAdmin
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -54,6 +51,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
+        IsYamdbCategoryAdmin
     ]
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
@@ -61,7 +59,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Title.objects.annotate(
             rating=Avg('reviews__score')
-        )
+        ).order_by('name', 'year')
 
 
 class CategoryViewSet(
@@ -73,8 +71,6 @@ class CategoryViewSet(
 ):
     permission_classes = [
         IsYamdbCategoryAdmin,
-        # permissions.IsAuthenticatedOrReadOnly,
-        # IsYamdbModerator,
     ]
     filter_backends = (filters.SearchFilter,)
     search_fields = ['=name', ]
@@ -83,10 +79,20 @@ class CategoryViewSet(
     lookup_field = 'slug'
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(ViewSetMixin,
+                   mixins.ListModelMixin,
+                   mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin,
+                   generics.GenericAPIView,
+                   ):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        AuthorPermissions
+        IsYamdbCategoryAdmin,
     ]
-    serializer_class = TitleSerializer
+    serializer_class = GenreSerializer
     queryset = Genre.objects.all()
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+    def perform_create(self, serializer):
+        serializer.save()

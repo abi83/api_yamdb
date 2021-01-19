@@ -5,9 +5,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-# Lidia, create your models here.
-
-
 class Category(models.Model):
     name = models.CharField(max_length=200)
     slug = models.CharField(max_length=200, unique=True, blank=True, null=True)
@@ -86,7 +83,6 @@ class Review(models.Model):
         null=False,
         related_name='reviews',
         default=''
-        # TODO: А разве у нас может Ревью существовать без ссылки на Title?
     )
 
     class Meta:

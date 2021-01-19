@@ -1,7 +1,9 @@
 from users_api.models import YamdbUser
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, PasswordField
+from django.contrib.auth.hashers import make_password
+from uuid import uuid1
 
 # class RoleField(serializers.ChoiceField):
 #
@@ -34,6 +36,7 @@ class MeSerializer(serializers.ModelSerializer):
     # role = RoleField(choices=YamdbUser.CHOICES, default=YamdbUser.USER)
     # role = serializers.CharField(source='get_role_display')
     role = serializers.CharField(required=False)
+    email = serializers.ReadOnlyField()
 
 
     # def to_internal_value(self, data):
@@ -81,3 +84,27 @@ class UserSerializer(serializers.ModelSerializer):
         lookup_field = 'username'
 
 
+class EmailRegistrationSerializer(serializers.ModelSerializer):
+    password = PasswordField(required=False)
+    username_field = 'email'
+
+    def create(self, validated_data):
+        return YamdbUser.objects.create(
+            **validated_data,
+            password=make_password(None),
+            username=str(uuid1())
+        )
+
+    # def validate_password(self, value):
+    #     breakpoint()
+    #     if not value:
+    #         return YamdbUser.set_unusable_password()
+    #     return serializers.ValidationError('You dont need to set password')
+
+    class Meta:
+        model = YamdbUser
+        fields = ['email', 'password',]
+
+
+class UserVerificationSerializer(TokenObtainPairSerializer):
+    pass

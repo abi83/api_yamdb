@@ -1,37 +1,49 @@
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework_simplejwt.views import TokenViewBase
 from django.shortcuts import get_object_or_404
-
+from rest_framework_simplejwt.tokens import AccessToken
+from django.contrib.auth.tokens import default_token_generator
 
 from users_api.models import YamdbUser
-from users_api.serializers import UserSerializer, MeSerializer
+from users_api.serializers import UserSerializer, MeSerializer, EmailRegistrationSerializer, UserVerificationSerializer
 from users_api.permissions import IsYamdbAdmin
 
 
 
-class CreateUser(
-    viewsets.ViewSetMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-):
+class CreateUser(generics.CreateAPIView):
     """
     Create user with POST request with email parameter.
     Wait for email confirmation code.
     """
-    queryset = YamdbUser.objects.all()
-    serializer_class = UserSerializer
+    # queryset = YamdbUser.objects.all()
+    permission_classes = (AllowAny, )
+    serializer_class = EmailRegistrationSerializer
+
+    def post(self, request, *args, **kwargs):
+        # breakpoint()
+
+        # code = default_token_generator.make_token(user)
+        return super().post(request, *args, **kwargs)
 
 
-class ConfirmUser(viewsets.ViewSetMixin,
-                  mixins.CreateModelMixin,
-                  generics.GenericAPIView,):
+class ConfirmUser(generics.CreateAPIView):
     """
     Activate your user with POST request included email and confirmation_code params
     """
-    queryset = YamdbUser.objects.all()
-    serializer_class = UserSerializer
+    # queryset = YamdbUser.objects.all()
+    serializer_class = UserVerificationSerializer
+    permission_classes = (AllowAny, )
+
+
+    def post(self, request, *args, **kwargs):
+
+        # token = AccessToken.for_user(user)
+
+        return super().post(request, *args, **kwargs)
+
 
 
 class UsersViewSet(viewsets.ViewSetMixin,
@@ -49,6 +61,7 @@ class UsersViewSet(viewsets.ViewSetMixin,
     serializer_class = UserSerializer
     lookup_field = 'username'
     permission_classes = (IsYamdbAdmin, )
+    # permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class UserSelf(
@@ -75,3 +88,14 @@ class UserSelf(
     def get_object(self):
         # breakpoint()
         return get_object_or_404(YamdbUser, username=self.request.user.username)
+
+    # @action(methods=['get', 'patch'], detail=False,
+    #         permission_classes=[IsAuthenticated, IsSelf],
+    #         url_path='me', url_name='personal_data')
+    # def personal_data(self, request):
+    #     pass
+    # detail = False
+
+
+class RegistrationView(generics.CreateAPIView):
+    pass

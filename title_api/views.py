@@ -50,17 +50,33 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
         IsYamdbCategoryAdmin
     ]
-    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return TitleViewSerializer
         return TitlePostSerializer
+
+    def get_queryset(self):
+        queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('name', 'year')
+
+        for param in ['genre', 'category', 'year', 'name']:
+            param_query = self.request.query_params.get(param, None)
+            kwarg_name = param
+
+            if param == 'name':
+                kwarg_name = f'{param}__contains'
+
+            if param in ['genre', 'category']:
+                kwarg_name = f'{param}__slug'
+
+            if param_query is not None:
+                return queryset.filter(**{f'{kwarg_name}': param_query})
+
+        return queryset
 
 
 class CategoryViewSet(

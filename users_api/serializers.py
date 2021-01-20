@@ -108,13 +108,16 @@ class EmailRegistrationSerializer(serializers.ModelSerializer):
         fields = ['email', 'password',]
 
 
-class UserVerificationSerializer(TokenObtainPairSerializer):
+class UserVerificationSerializer(serializers.ModelSerializer):
     password = PasswordField(required=False)
     confirmation_code = serializers.CharField(write_only=True)
+    is_active = serializers.BooleanField(required=False)
     username_field = 'email'
 
     class Meta:
         model = YamdbUser
-        fields = ['email', 'password', 'confirmation_code', ]
+        fields = ['email', 'password', 'confirmation_code', 'is_active']
+
+
 
 

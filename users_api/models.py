@@ -86,16 +86,17 @@ class YamdbUser(AbstractUser):
 @receiver(signals.post_save, sender=YamdbUser)
 def send_code(sender, instance, created, **kwargs):
     code = default_token_generator.make_token(instance)
-    email = EmailMessage(
-    'Confirmation code',
-    f'Your confirmation code: {code}',
-    'from@example.com',
-    [f'{instance.email}', ],
-    # ['bcc@example.com'],
-    # reply_to=['another@example.com'],
-    # headers={'Message-ID': 'foo'},
-    )
-    email.send()
+    if created:
+        email = EmailMessage(
+        'Confirmation code',
+        f'Your confirmation code: {code}',
+        'from@example.com',
+        [f'{instance.email}', ],
+        # ['bcc@example.com'],
+        # reply_to=['another@example.com'],
+        # headers={'Message-ID': 'foo'},
+        )
+        email.send()
     print('I am a reciever')
     print(f'Code: {code}')
     print(f'Sender: {sender}, instance: {instance}, created: {created}')

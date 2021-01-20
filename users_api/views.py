@@ -3,8 +3,14 @@ from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework_simplejwt.views import TokenViewBase
+from rest_framework_simplejwt.views import TokenObtainPairView
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.response import Response
+from rest_framework import status
+
+
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.hashers import make_password
 from uuid import uuid1
@@ -27,12 +33,12 @@ class CreateUser(generics.CreateAPIView):
     permission_classes = (AllowAny, )
     serializer_class = EmailRegistrationSerializer
 
-    def post(self, request, *args, **kwargs):
-        # breakpoint()
-        # before create
-        # code = default_token_generator.make_token(user)
-
-        return super().post(request, *args, **kwargs)
+    # def post(self, request, *args, **kwargs):
+    #     # breakpoint()
+    #     # before create
+    #     # code = default_token_generator.make_token(user)
+    #
+    #     return super().post(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         # breakpoint()
@@ -48,7 +54,10 @@ class CreateUser(generics.CreateAPIView):
 
 
 
-class ConfirmUser(generics.UpdateAPIView):
+class ConfirmUser(
+    # TokenObtainPairView,
+    generics.UpdateAPIView,
+):
     """
     Activate your user with POST request included email and confirmation_code params
     """
@@ -64,16 +73,51 @@ class ConfirmUser(generics.UpdateAPIView):
         return YamdbUser.objects.get(email=self.request.data.get('email'))
 
     def post(self, request, *args, **kwargs):
-        # user
-        #
-        # default_token_generator.check_token(user, token)
 
+        token = request.data.get('confirmation_code')
+        user = self.get_object()
+        check = default_token_generator.check_token(user, token)
         # token = AccessToken.for_user(user)
-        request.data._mutable = True
-        request.data['is_active'] = True
-        request.data._mutable = False
+        if check:
+            request.data._mutable = True
+            request.data['is_active'] = True
+            request.data._mutable = False
 
-        return super().update(request, *args, **kwargs)
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        token = AccessToken.for_user(user)
+        # serializer = TokenObtainPairSerializer()
+        # _, token = AuthToken.objects.create(user)
+        # breakpoint()
+        return Response(
+            data=token.payload,
+            status=status.HTTP_202_ACCEPTED,
+            content_type='application/json',
+        )
+
+
+
+        # return Response(serializer.data)
+
+        # return super().update(request, *args, **kwargs)
+        # return self.update(request, *args, **kwargs)
+
+    # def update(self, request, *args, **kwargs):
+    #     partial = kwargs.pop('partial', False)
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance, data=request.data, partial=partial)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_update(serializer)
+    #
+    #     if getattr(instance, '_prefetched_objects_cache', None):
+    #         # If 'prefetch_related' has been applied to a queryset, we need to
+    #         # forcibly invalidate the prefetch cache on the instance.
+    #         instance._prefetched_objects_cache = {}
+    #     breakpoint()
+    #     return Response(serializer.data)
+
 
 
 

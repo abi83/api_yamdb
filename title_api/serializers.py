@@ -1,9 +1,7 @@
-from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
 from title_api.models import Review, Comment, Title, Category, Genre
-from rest_framework.validators import UniqueValidator
 
 
 class ReviewSerializer(serializers.ModelSerializer):

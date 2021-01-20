@@ -10,7 +10,6 @@ class AuthorPermissions(permissions.BasePermission):
 
 
 class IsAdminPermissions(permissions.BasePermission):
-
     def has_object_permission(self, request, view, obj):
         if request.method not in permissions.SAFE_METHODS:
             return request.user.is_superuser or request.user.role == YamdbUser.Role.ADMIN

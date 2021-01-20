@@ -2,18 +2,16 @@ from uuid import uuid1
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import get_object_or_404
-from rest_framework import generics
-from rest_framework import mixins
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import generics, mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
+
 from users_api.models import YamdbUser
 from users_api.permissions import IsYamdbAdmin
-from users_api.serializers import UserSerializer, MeSerializer, \
+from users_api.serializers import UserSerializer, \
     EmailRegistrationSerializer, UserVerificationSerializer
 
 
@@ -67,7 +65,7 @@ class ConfirmUser(generics.UpdateAPIView):
 
         token = AccessToken.for_user(user)
         return Response(
-            data=token.payload,
+            data={'token': str(token)},
             status=status.HTTP_202_ACCEPTED,
             content_type='application/json',
         )
@@ -89,25 +87,25 @@ class UsersViewSet(viewsets.ViewSetMixin,
     lookup_field = 'username'
     permission_classes = (IsYamdbAdmin, )
 
-
-class UserSelf(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    generics.GenericAPIView,
-):
-    serializer_class = MeSerializer
-    permission_classes = (IsAuthenticated,)
-    http_method_names = ['get', 'patch']
-    queryset = YamdbUser.objects.all()
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def patch(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def get_object(self):
-        return get_object_or_404(YamdbUser, username=self.request.user.username)
+    @action(methods=['get', 'patch'], detail=False,
+            permission_classes=[IsAuthenticated, ],
+            url_path='me', url_name='personal_data')
+    def personal_data(self, request):
+        if request.method == 'GET':
+            me = request.user
+            serializer = self.get_serializer(me)
+            return Response(
+                data=serializer.data,
+                status=status.HTTP_200_OK,
+                content_type='application/json',
+            )
+        if request.method == 'PATCH':
+            me = request.user
+            serializer = self.get_serializer(me, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_200_OK,
+            content_type='application/json',
+        )

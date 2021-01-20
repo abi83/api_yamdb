@@ -7,7 +7,6 @@ from rest_framework import mixins
 from rest_framework import viewsets, permissions, filters
 from rest_framework.viewsets import ViewSetMixin
 
-from .filters import TitleFilter
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions, IsAdminPermissions
 from title_api.serializers import ReviewSerializer, CommentSerializer, TitlePostSerializer, TitleViewSerializer, CategorySerializer, \

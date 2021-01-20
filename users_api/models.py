@@ -1,20 +1,61 @@
+from django.contrib.auth.models import AbstractUser
+
 from django.db import models
 
-from django.contrib.auth import get_user_model
-from django.db import models
+class YamdbUser(AbstractUser):
+    # class YamdbRole(models.Model):
+    #     USER = 'U', 'user'
+    #     MODERATOR = 'M', 'moderator'
+    #     ADMIN = 'A', 'admin'
+    #     CHOICES = [USER, MODERATOR, ADMIN]
+    #
+    #     name = models.CharField(max_length=1, choices=CHOICES)
+    #
+    #     def __str__(self):
+    #         return 'self.name'
+    class Role(models.TextChoices):
+        USER = 'user'
+        MODERATOR = 'moderator'
+        ADMIN = 'admin'
+        # CHOICES = (USER, MODERATOR, ADMIN)
 
-User = get_user_model()
+    bio = models.CharField(max_length=255, blank=True)
+    role = models.CharField(max_length=10, default=Role.USER, choices=Role.choices)
+
+    # def __init__(self, *args, **kwargs):
+    #     mkwargs = {}
+    #     for item, value in kwargs.items():
+    #         if item != 'role':
+    #             mkwargs[item] = value
+    #     mkwargs['_role'] = kwargs.get('role') or self.USER
+    #     super(YamdbUser, self).__init__(*args, **mkwargs)
+
+    # @property
+    # def role(self):
+    #     return self._role
+        # return str(self._role)[7:].split("'")[0]
+    # role2 = models.CharField(max_length=1, choices=CHOICES2, default=USER2)
+
+    # def get_role_display(self):
+    #     if self.role:
+    #         return 'RRole'
+    #     return 'No role'
+    #
+    # def get_role(self):
+    #     if self.role:
+    #         return 'RRole'
+    #     return 'No role'
 
 
-class Role(models.Model):
-    class Roles(models.TextChoices):
-        USER = 'usr', 'User'
-        MODERATOR = 'mdr', 'Moderator'
-        ADMIN = 'adm', 'Admin'
-    name = models.CharField(max_length=3, choices=Roles.choices, default=Roles.USER)
+    class Meta:
+        ordering = ('-id',)
 
 
-class YamdbUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.CharField(max_length=255,)
-    role = models.ForeignKey(Role, on_delete=models.SET_DEFAULT, default=Role.Roles.USER)
+# DB Index
+# email uniq
+# USER_REGISTRATION = email
+#
+
+# django rest framework simple jwt!!!
+# class: Token -> def for_user():
+#

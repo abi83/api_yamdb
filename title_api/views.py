@@ -74,7 +74,6 @@ class TitleViewSet(viewsets.ModelViewSet):
 
             if param_query is not None:
                 return queryset.filter(**{f'{kwarg_name}': param_query})
-
         return queryset
 
 

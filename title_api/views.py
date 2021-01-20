@@ -9,7 +9,8 @@ from rest_framework.viewsets import ViewSetMixin
 
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions, IsAdminPermissions
-from title_api.serializers import ReviewSerializer, CommentSerializer, TitlePostSerializer, TitleViewSerializer, CategorySerializer, \
+from title_api.serializers import ReviewSerializer, CommentSerializer, \
+    TitlePostSerializer, TitleViewSerializer, CategorySerializer, \
     GenreSerializer
 from users_api.permissions import IsYamdbCategoryAdmin
 

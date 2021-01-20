@@ -51,7 +51,7 @@ class YamdbUser(AbstractUser):
     bio = models.CharField(max_length=255, blank=True)
     role = models.CharField(max_length=10, default=Role.USER, choices=Role.choices)
     email = models.EmailField(unique=True, db_index=True, blank=False, null=False)
-    username = models.CharField(unique=False, max_length=31)
+    username = models.CharField(unique=False, max_length=40)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 

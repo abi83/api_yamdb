@@ -1,13 +1,14 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from users_api.views import CreateUser, ConfirmUser, UsersViewSet, UserSelf
+from users_api.views import CreateUser, ConfirmUser, UsersViewSet\
+    # ,UserSelf
 
 router = DefaultRouter()
 router.register(prefix='users', viewset=UsersViewSet, basename='users')
 
 urlpatterns = [
-    path('v1/users/me/', UserSelf.as_view(), name='user-detail'),
+    # path('v1/users/me/', UserSelf.as_view(), name='user-detail'),
     path('v1/', include(router.urls)),
 ]
 

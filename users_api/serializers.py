@@ -23,12 +23,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = YamdbUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'bio', 'role', ]
+        fields = ['username', 'first_name', 'last_name',
+                  'email', 'bio', 'role', ]
         lookup_field = 'username'
 
 
 class EmailRegistrationSerializer(serializers.ModelSerializer):
-    """Сериализатор для преобразования данных при получении кода подтверждения."""
+    """
+    Сериализатор для преобразования данных при получении кода подтверждения.
+    """
     password = PasswordField(required=False)
     username_field = 'email'
 

@@ -48,9 +48,12 @@ class YamdbUser(AbstractUser):
         MODERATOR = 'moderator'
         ADMIN = 'admin'
 
-    bio = models.CharField(max_length=255, blank=True)
-    role = models.CharField(max_length=10, default=Role.USER, choices=Role.choices)
-    email = models.EmailField(unique=True, db_index=True, blank=False, null=False)
+    bio = models.TextField(max_length=255, blank=True,
+                           verbose_name='Users biography')
+    role = models.CharField(max_length=10, default=Role.USER,
+                            choices=Role.choices)
+    email = models.EmailField(unique=True, db_index=True, blank=False,
+                              null=False)
     username = models.CharField(unique=False, max_length=40)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -59,6 +62,8 @@ class YamdbUser(AbstractUser):
 
     class Meta:
         ordering = ('-id',)
+        verbose_name = 'Yamdb User'
+        verbose_name_plural = 'Yamdb Users'
 
 
 @receiver(signals.post_save, sender=YamdbUser)
@@ -66,9 +71,9 @@ def send_code(sender, instance, created, **kwargs):
     code = default_token_generator.make_token(instance)
     if created:
         email = EmailMessage(
-        'Confirmation code',
-        f'Your confirmation code: {code}',
-        'from@example.com',
-        [f'{instance.email}', ],
+            'Confirmation code',
+            f'Your confirmation code: {code}',
+            'from@example.com',
+            [f'{instance.email}', ],
         )
         email.send()

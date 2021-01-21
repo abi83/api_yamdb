@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 
 from title_api.models import Review, Comment, Title, Category, Genre
@@ -15,7 +16,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         title = get_object_or_404(Title, pk=title_id)
         if request.method != "PATCH" and Review.objects.filter(author=request.user, title=title).exists():
             raise serializers.ValidationError("Validation error. Review object with current author and title already "
-                                              "exist!")
+                                              "exists!")
         return data
 
     class Meta:

@@ -1,6 +1,9 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -35,13 +38,23 @@ class Genre(models.Model):
         return self.name
 
 
+def year_validator(value):
+    if value < 1900 or value > datetime.datetime.now().year:
+        raise ValidationError('It\'s is not a correct year!')
+
+
 class Title(models.Model):
     """Заглавие"""
     name = models.TextField(
         max_length=100, db_index=True
     )
 
-    year = models.IntegerField()
+    year = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        verbose_name='Year',
+        validators=[year_validator]
+    )
     description = models.TextField(
         max_length=500,
         null=True,

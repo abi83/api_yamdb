@@ -51,7 +51,6 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleViewSerializer(serializers.ModelSerializer):
     """Сериализатор вывода списка произведений"""
-
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
     rating = serializers.FloatField()

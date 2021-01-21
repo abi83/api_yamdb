@@ -1,8 +1,18 @@
 from rest_framework import permissions
+from users_api.models import YamdbUser
 
 
 class AuthorPermissions(permissions.BasePermission):
+    """Редактирование объекта возможно только для Автора."""
     def has_object_permission(self, request, view, obj):
         if request.method not in permissions.SAFE_METHODS:
-            return request.user.is_moderator or request.user == obj.author
+            return request.user.role == YamdbUser.Role.MODERATOR or request.user == obj.author
+        return True
+
+
+class IsAdminPermissions(permissions.BasePermission):
+    """Редактирование объекта возможно только для Администратора."""
+    def has_object_permission(self, request, view, obj):
+        if request.method not in permissions.SAFE_METHODS:
+            return request.user.is_superuser or request.user.role == YamdbUser.Role.ADMIN
         return True

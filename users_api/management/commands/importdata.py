@@ -5,14 +5,13 @@ from _sqlite3 import IntegrityError
 from django.core.management.base import BaseCommand
 
 from users_api.models import YamdbUser
-from title_api.models import Genre, Category  # non relation models
-from title_api.models import Title, Comment, Review  # models with relations. Genre-Title is the hardest!
+from title_api.models import Genre, Category
+from title_api.models import Title, Comment, Review
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
 
-        # import users
         with open(os.getcwd() + '/data/users.csv', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -26,7 +25,6 @@ class Command(BaseCommand):
                 else:
                     print(f'{obj.__class__.__name__} object {obj} already exists')
 
-        # import categories
         with open(os.getcwd() + '/data/category.csv', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -38,7 +36,6 @@ class Command(BaseCommand):
                 else:
                     print(f'{obj.__class__.__name__} object {obj} already exists')
 
-        # import genres
         with open(os.getcwd() + '/data/genre.csv', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -50,7 +47,6 @@ class Command(BaseCommand):
                 else:
                     print(f'{obj.__class__.__name__} object {obj} already exists')
 
-        # import titles and genre-title manytomany relations
         with open(os.getcwd() + '/data/titles.csv', encoding='utf-8') as titles_file, open(os.getcwd() + '/data/genre_title.csv', encoding='utf-8') as gt_file:
             title_reader = csv.DictReader(titles_file)
             gt_reader = csv.DictReader(gt_file)
@@ -72,7 +68,6 @@ class Command(BaseCommand):
                 else:
                     print(f'{obj.__class__.__name__} object {obj} already exists')
 
-        # import reviews
         with open(os.getcwd() + '/data/review.csv', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -95,7 +90,6 @@ class Command(BaseCommand):
                     print(f'{obj.__class__.__name__} object {obj} already exists')
 
 
-        # import comments
         with open(os.getcwd() + '/data/comments.csv', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:

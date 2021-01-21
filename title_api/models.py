@@ -6,12 +6,12 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    '''Категории (типы) произведений'''
+    """Категории произведений"""
     name = models.CharField(max_length=200)
     slug = models.CharField(max_length=200, unique=True, blank=True, null=True)
 
     class Meta:
-        verbose_name = "Category"
+        verbose_name = 'Category'
         ordering = ['name']
         constraints = [
             models.UniqueConstraint(fields=['slug', 'name'],
@@ -23,7 +23,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    '''Жанры'''
+    """Жанры"""
     name = models.CharField(max_length=80)
     slug = models.SlugField(unique=True, null=True)
 
@@ -35,7 +35,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    '''Заглавие'''
+    """Заглавие"""
     name = models.TextField(
         max_length=100,
     )
@@ -67,6 +67,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
+    """Отзывы на произведения"""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -95,6 +96,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
+    """Комментарии"""
     id = models.AutoField(primary_key=True)
     author = models.ForeignKey(
         User,

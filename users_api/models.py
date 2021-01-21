@@ -28,7 +28,7 @@ class YamdbUserManager(BaseUserManager):
                     is_admin=False,
                     ):
         if not email:
-            raise ValueError("User must have an email address")
+            raise ValueError('User must have an email address')
         user_obj = self.model(
             email=email
         )

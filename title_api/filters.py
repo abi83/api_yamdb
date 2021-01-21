@@ -4,6 +4,7 @@ from .models import Title
 
 
 class TitleFilter(FilterSet):
+    """Фильтрация произведений по имени, году"""
     name = CharFilter(field_name='name', lookup_expr='icontains')
     year = NumberFilter()
 

@@ -4,11 +4,12 @@ from .models import Title
 
 
 class TitleFilter(FilterSet):
-    """Фильтрация произведений по имени, году"""
+    """Фильтрация произведений по get параметрам"""
+    category = CharFilter(field_name='category', lookup_expr='slug')
+    genre = CharFilter(field_name='genre', lookup_expr='slug')
     name = CharFilter(field_name='name', lookup_expr='icontains')
     year = NumberFilter()
 
     class Meta:
         model = Title
-        fields = ['name', 'year']
-
+        fields = ('genre', 'category', 'name', 'year')

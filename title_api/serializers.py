@@ -13,8 +13,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     def validate(self, data):
         request = self.context.get('request')
         title_id = self.context.get('view').kwargs.get('title_id')
-        title = get_object_or_404(Title, pk=title_id)
-        if request.method != "PATCH" and Review.objects.filter(author=request.user, title=title).exists():
+        if request.method != "PATCH" and Review.objects.filter(author=request.user, title__id=title_id).exists():
             raise serializers.ValidationError("Validation error. Review object with current author and title already "
                                               "exists!")
         return data

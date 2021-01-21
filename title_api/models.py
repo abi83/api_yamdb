@@ -6,15 +6,16 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    """Категории произведений"""
-    name = models.CharField(max_length=200)
-    slug = models.CharField(max_length=200, unique=True, blank=True, null=True)
+    """Категории (типы) произведений"""
+    name = models.CharField(max_length=200, verbose_name='category_title')
+    slug = models.CharField(max_length=200, unique=True, blank=True, null=True, verbose_name='category_code')
 
     class Meta:
         verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
         ordering = ['name']
         constraints = [
-            models.UniqueConstraint(fields=['slug', 'name'],
+            models.UniqueConstraint(fields=['name'],
                                     name='unique_category')
         ]
 
@@ -37,8 +38,9 @@ class Genre(models.Model):
 class Title(models.Model):
     """Заглавие"""
     name = models.TextField(
-        max_length=100,
+        max_length=100, db_index=True
     )
+
     year = models.IntegerField()
     description = models.TextField(
         max_length=500,
@@ -76,7 +78,7 @@ class Review(models.Model):
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     score = models.IntegerField(
         blank=True,
-        validators=[MaxValueValidator(10), MinValueValidator(1)]
+        validators=[MaxValueValidator(10, 'Can\'t be more than 10'), MinValueValidator(1, 'Can\'t be less than 1')]
     )
     text = models.TextField()
     title = models.ForeignKey(
@@ -88,7 +90,7 @@ class Review(models.Model):
     )
 
     class Meta:
-        ordering = ['author']
+        ordering = ['pub_date']
         constraints = [
             models.UniqueConstraint(fields=['title', 'author'],
                                     name='unique_review_title_author')
@@ -97,7 +99,6 @@ class Review(models.Model):
 
 class Comment(models.Model):
     """Комментарии"""
-    id = models.AutoField(primary_key=True)
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

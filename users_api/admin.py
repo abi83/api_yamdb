@@ -1,18 +1,31 @@
 from django import forms
 from django.contrib import admin
+from django.db import models
+
 
 from users_api.models import YamdbUser
 
 
-class YamdbUserForm(forms.ModelForm):
-    bio = forms.CharField(widget=forms.Textarea)
-
-    class Meta:
-        model = YamdbUser
-        fields = '__all__'
-
-
 @admin.register(YamdbUser)
 class YamdbUserAdmin(admin.ModelAdmin):
-    form = YamdbUserForm
-    list_display = ('username', 'pk', 'email', 'role',)
+    list_display = ('pk', 'email', 'first_name', 'last_name',
+                    'role', 'is_active')
+    search_fields = ('email', 'first_name', 'last_name', )
+    list_filter = ('role', )
+    empty_value_display = '-not filled-'
+    list_display_links = ('pk', 'email',)
+    date_hierarchy = 'last_login'
+
+    fieldsets = (
+        (None, {
+            'fields': ('first_name', 'last_name', 'username', 'email', 'bio', )
+        }),
+        ('Advanced options', {
+            'classes': ('collapse',),
+            'fields': ('role', 'date_joined', 'last_login',
+                       'is_active', 'is_staff', 'is_superuser'),
+        }),
+    )
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea},
+    }

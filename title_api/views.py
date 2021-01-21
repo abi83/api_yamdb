@@ -8,17 +8,17 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework.viewsets import ViewSetMixin
 
 from title_api.models import Review, Comment, Title, Category, Genre
-from title_api.permissions import AuthorPermissions, IsAdminPermissions
+from title_api.permissions import AuthorPermissions
 from title_api.serializers import ReviewSerializer, CommentSerializer, \
     TitlePostSerializer, TitleViewSerializer, CategorySerializer, \
     GenreSerializer
-from users_api.permissions import IsYamdbCategoryAdmin
+from users_api.permissions import IsYamdbAdmin, IsYamdbModerator, YamdbReadOnly
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        AuthorPermissions | IsAdminPermissions
+        AuthorPermissions | IsYamdbAdmin | IsYamdbModerator
     ]
 
     queryset = Review.objects.all()
@@ -36,7 +36,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly, AuthorPermissions
+        permissions.IsAuthenticatedOrReadOnly,
+        AuthorPermissions | IsYamdbAdmin | IsYamdbModerator
     ]
     serializer_class = CommentSerializer
 
@@ -51,8 +52,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsYamdbCategoryAdmin
+        YamdbReadOnly | IsYamdbAdmin
     ]
 
     def get_serializer_class(self):
@@ -86,7 +86,7 @@ class CategoryViewSet(
     generics.GenericAPIView,
 ):
     permission_classes = [
-        IsYamdbCategoryAdmin,
+        YamdbReadOnly | IsYamdbAdmin
     ]
     filter_backends = (filters.SearchFilter,)
     search_fields = ['=name', ]
@@ -102,7 +102,7 @@ class GenreViewSet(ViewSetMixin,
                    generics.GenericAPIView,
                    ):
     permission_classes = [
-        IsYamdbCategoryAdmin,
+        YamdbReadOnly | IsYamdbAdmin
     ]
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()

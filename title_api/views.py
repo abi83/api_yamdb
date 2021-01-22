@@ -53,16 +53,20 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        return Comment.objects.filter(review=review_id)
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        return review.comments.all()
 
     def perform_create(self, serializer):
-        review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        serializer.save(author=self.request.user, review=review_id)
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('name', 'year')
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+    ).order_by(
+        'name', 'year'
+    )
     permission_classes = [
         YamdbReadOnly | IsYamdbAdmin
     ]

@@ -7,12 +7,23 @@ from rest_framework import mixins
 from rest_framework import viewsets, permissions, filters
 from rest_framework.viewsets import ViewSetMixin
 
+from title_api.filters import TitleFilter
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
-from title_api.serializers import ReviewSerializer, CommentSerializer, \
-    TitlePostSerializer, TitleViewSerializer, CategorySerializer, \
-    GenreSerializer
+from title_api.serializers import (ReviewSerializer, CommentSerializer,
+                                   TitlePostSerializer, TitleViewSerializer, CategorySerializer,
+                                   GenreSerializer)
 from users_api.permissions import IsYamdbAdmin, IsYamdbModerator, YamdbReadOnly
+
+
+class SuperViewSet(
+    viewsets.ViewSetMixin,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView
+):
+    pass
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -26,12 +37,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, ]
 
     def get_queryset(self):
-        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-        return Review.objects.filter(title=title_id)
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        return title.reviews.all()
 
     def perform_create(self, serializer):
-        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-        serializer.save(author=self.request.user, title=title_id)
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -51,40 +62,20 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('name', 'year')
     permission_classes = [
         YamdbReadOnly | IsYamdbAdmin
     ]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return TitleViewSerializer
         return TitlePostSerializer
 
-    def get_queryset(self):
-        queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('name', 'year')
 
-        for param in ['genre', 'category', 'year', 'name']:
-            param_query = self.request.query_params.get(param, None)
-            kwarg_name = param
-
-            if param == 'name':
-                kwarg_name = f'{param}__contains'
-
-            if param in ['genre', 'category']:
-                kwarg_name = f'{param}__slug'
-
-            if param_query is not None:
-                return queryset.filter(**{f'{kwarg_name}': param_query})
-        return queryset
-
-
-class CategoryViewSet(
-    viewsets.ViewSetMixin,
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-):
+class CategoryViewSet(SuperViewSet):
     permission_classes = [
         YamdbReadOnly | IsYamdbAdmin
     ]
@@ -95,12 +86,7 @@ class CategoryViewSet(
     lookup_field = 'slug'
 
 
-class GenreViewSet(ViewSetMixin,
-                   mixins.ListModelMixin,
-                   mixins.CreateModelMixin,
-                   mixins.DestroyModelMixin,
-                   generics.GenericAPIView,
-                   ):
+class GenreViewSet(SuperViewSet):
     permission_classes = [
         YamdbReadOnly | IsYamdbAdmin
     ]

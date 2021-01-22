@@ -5,18 +5,10 @@ from rest_framework_simplejwt.serializers import PasswordField
 from users_api.models import YamdbUser
 
 
-# class MeSerializer(serializers.ModelSerializer):
-#     username = serializers.ReadOnlyField()
-#     role = serializers.CharField(required=False)
-#     email = serializers.ReadOnlyField()
-#
-#     class Meta:
-#         model = YamdbUser
-#         fields = ['username', 'first_name', 'last_name', 'email', 'bio', 'role', ]
-#         lookup_field = 'username'
-
-
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Default YamdbUser serializer
+    """
     role = serializers.CharField(required=False)
 
     username = serializers.CharField(
@@ -38,6 +30,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class EmailRegistrationSerializer(serializers.ModelSerializer):
+    """
+    YamdbUser specific serializer for registration page
+    """
     password = PasswordField(required=False)
     username_field = 'email'
 
@@ -47,6 +42,9 @@ class EmailRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserVerificationSerializer(serializers.ModelSerializer):
+    """
+    YamdbUser specific serializer for activation page
+    """
     password = PasswordField(required=False)
     confirmation_code = serializers.CharField(write_only=True)
     is_active = serializers.BooleanField(required=False)

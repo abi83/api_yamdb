@@ -5,6 +5,7 @@ from title_api.models import Review, Comment, Title, Category, Genre
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Сериализатор отзывов"""
     title = serializers.ReadOnlyField(source='title.name')
     author = serializers.ReadOnlyField(source='author.username')
 
@@ -12,9 +13,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         title_id = self.context.get('view').kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
-        if request.method != "PATCH" and Review.objects.filter(author=request.user, title=title).exists():
-            raise serializers.ValidationError("Validation error. Review object with current author and title already "
-                                              "exist!")
+        if request.method != "PATCH" and Review.objects.filter(
+                author=request.user, title=title).exists():
+            raise serializers.ValidationError(
+                'Validation error. Review object with current author'
+                'and title already exists!')
         return data
 
     class Meta:
@@ -23,6 +26,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """Сериализатор комментариев"""
     author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
@@ -31,6 +35,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор категорий"""
     class Meta:
         model = Category
         fields = ('name', 'slug')
@@ -38,6 +43,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
+    """Сериализатор жанров"""
     class Meta:
         model = Genre
         fields = ('name', 'slug')
@@ -45,6 +51,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleViewSerializer(serializers.ModelSerializer):
+    """Сериализатор вывода списка произведений"""
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
     rating = serializers.FloatField()
@@ -55,6 +62,7 @@ class TitleViewSerializer(serializers.ModelSerializer):
 
 
 class TitlePostSerializer(serializers.ModelSerializer):
+    """Сериализатор создания произведений"""
     genre = serializers.SlugRelatedField(
         queryset=Genre.objects.all(),
         slug_field='slug',

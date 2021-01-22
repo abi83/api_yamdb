@@ -10,7 +10,6 @@ urlpatterns = [
     path('v1/', include(router.urls)),
 ]
 
-
 urlpatterns += [
     path('v1/auth/email/', CreateUser.as_view(), name='user-registration'),
     path('v1/auth/token/', ConfirmUser.as_view(), name='confirm-user'),

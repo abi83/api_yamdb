@@ -2,6 +2,7 @@ from uuid import uuid1
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -40,10 +41,11 @@ class ConfirmUser(generics.UpdateAPIView):
     http_method_names = ['post', ]
 
     def get_object(self):
-        return YamdbUser.objects.get(email=self.request.data.get('email'))
+        return get_object_or_404(
+            YamdbUser, email=self.request.data.get('email')
+        )
 
-    def post(self, request, *args, **kwargs):
-
+    def post(self, request):
         token = request.data.get('confirmation_code')
         user = self.get_object()
         check = default_token_generator.check_token(user, token)
@@ -78,8 +80,8 @@ class UsersViewSet(viewsets.ViewSetMixin,
                    mixins.DestroyModelMixin,
                    generics.GenericAPIView,):
     """
-    Users List (for admin only), Send PATCH request to /api/v1/users/me/
-    for editing your user information.
+    Users List (for admins only), Send PATCH request to /api/v1/users/me/
+    for editing your own profile.
     """
     queryset = YamdbUser.objects.all()
     serializer_class = UserSerializer
@@ -100,11 +102,12 @@ class UsersViewSet(viewsets.ViewSetMixin,
             )
         if request.method == 'PATCH':
             me = request.user
-            serializer = self.get_serializer(me, data=request.data, partial=True)
+            serializer = self.get_serializer(
+                me, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             self.perform_update(serializer)
-        return Response(
-            data=serializer.data,
-            status=status.HTTP_200_OK,
-            content_type='application/json',
-        )
+            return Response(
+                data=serializer.data,
+                status=status.HTTP_200_OK,
+                content_type='application/json',
+            )

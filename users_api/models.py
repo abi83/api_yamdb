@@ -77,6 +77,9 @@ class YamdbUser(AbstractUser):
         verbose_name = 'Yamdb User'
         verbose_name_plural = 'Yamdb Users'
 
+    def __str__(self):
+        return self.username
+
     @property
     def is_moderator(self):
         return self.role == self.Role.MODERATOR

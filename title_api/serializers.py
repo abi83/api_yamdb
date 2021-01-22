@@ -6,8 +6,8 @@ from title_api.models import Review, Comment, Title, Category, Genre
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор отзывов"""
-    title = serializers.ReadOnlyField(source='title.name')
-    author = serializers.ReadOnlyField(source='author.username')
+    title = serializers.StringRelatedField()
+    author = serializers.StringRelatedField()
 
     def validate(self, data):
         request = self.context.get('request')
@@ -27,7 +27,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор комментариев"""
-    author = serializers.ReadOnlyField(source='author.username')
+    author = serializers.StringRelatedField()
 
     class Meta:
         fields = ('id', 'text', 'author', 'pub_date')
@@ -38,7 +38,7 @@ class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор категорий"""
     class Meta:
         model = Category
-        fields = ('name', 'slug')
+        exclude = ['id']
         lookup_field = 'slug'
 
 
@@ -46,7 +46,7 @@ class GenreSerializer(serializers.ModelSerializer):
     """Сериализатор жанров"""
     class Meta:
         model = Genre
-        fields = ('name', 'slug')
+        exclude = ['id']
         lookup_field = 'slug'
 
 

@@ -13,6 +13,7 @@ class YamdbUserManager(BaseUserManager):
     Custom User Manager for custom User model.
     Provides correct implementation of 'manage.py createsuperuser' command
     """
+
     def create_superuser(self, username=None, password=None, email=None):
         user_obj = self.create_user(
             username=str(uuid1()),
@@ -54,6 +55,7 @@ class YamdbUser(AbstractUser):
     Roles are different from Django Groups. Admins can manage users,
     Moderators can manage content, Users can publish content.
     """
+
     class Role(models.TextChoices):
         USER = 'user'
         MODERATOR = 'moderator'

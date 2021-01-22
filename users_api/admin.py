@@ -2,7 +2,6 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 
-
 from users_api.models import YamdbUser
 
 
@@ -10,15 +9,15 @@ from users_api.models import YamdbUser
 class YamdbUserAdmin(admin.ModelAdmin):
     list_display = ('pk', 'email', 'first_name', 'last_name',
                     'role', 'is_active')
-    search_fields = ('email', 'first_name', 'last_name', )
-    list_filter = ('role', )
+    search_fields = ('email', 'first_name', 'last_name',)
+    list_filter = ('role',)
     empty_value_display = '-not filled-'
     list_display_links = ('pk', 'email',)
     date_hierarchy = 'last_login'
 
     fieldsets = (
         (None, {
-            'fields': ('first_name', 'last_name', 'username', 'email', 'bio', )
+            'fields': ('first_name', 'last_name', 'username', 'email', 'bio',)
         }),
         ('Advanced options', {
             'classes': ('collapse',),

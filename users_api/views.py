@@ -8,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-
 from users_api.models import YamdbUser
 from users_api.permissions import IsYamdbAdmin
 from users_api.serializers import UserSerializer, \

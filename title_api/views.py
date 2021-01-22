@@ -2,16 +2,14 @@ import django_filters
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
-from rest_framework import mixins
-from rest_framework import viewsets, permissions, filters
+from rest_framework import generics, mixins, viewsets, permissions, filters
 from rest_framework.viewsets import ViewSetMixin
 
 from title_api.models import Review, Comment, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
-from title_api.serializers import ReviewSerializer, CommentSerializer, \
-    TitlePostSerializer, TitleViewSerializer, CategorySerializer, \
-    GenreSerializer
+from title_api.serializers import (
+    ReviewSerializer, CommentSerializer, TitlePostSerializer,
+    TitleViewSerializer, CategorySerializer, GenreSerializer)
 from users_api.permissions import IsYamdbAdmin, IsYamdbModerator, YamdbReadOnly
 
 
@@ -61,7 +59,8 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitlePostSerializer
 
     def get_queryset(self):
-        queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('name', 'year')
+        queryset = Title.objects.annotate(
+            rating=Avg('reviews__score')).order_by('name', 'year')
 
         for param in ['genre', 'category', 'year', 'name']:
             param_query = self.request.query_params.get(param, None)

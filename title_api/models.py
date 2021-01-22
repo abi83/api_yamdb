@@ -11,7 +11,8 @@ User = get_user_model()
 class Category(models.Model):
     """Категории (типы) произведений"""
     name = models.CharField(max_length=200, verbose_name='category_title')
-    slug = models.CharField(max_length=200, unique=True, blank=True, null=True, verbose_name='category_code')
+    slug = models.CharField(max_length=200, unique=True, blank=True, null=True,
+                            verbose_name='category_code')
 
     class Meta:
         verbose_name = 'Category'
@@ -91,7 +92,10 @@ class Review(models.Model):
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     score = models.IntegerField(
         blank=True,
-        validators=[MaxValueValidator(10, 'Can\'t be more than 10'), MinValueValidator(1, 'Can\'t be less than 1')]
+        validators=[
+            MaxValueValidator(10, 'Can\'t be more than 10'),
+            MinValueValidator(1, 'Can\'t be less than 1')
+        ]
     )
     text = models.TextField()
     title = models.ForeignKey(

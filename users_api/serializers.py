@@ -6,7 +6,9 @@ from users_api.models import YamdbUser
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор пользователей"""
+    """
+    Default YamdbUser serializer
+    """
     role = serializers.CharField(required=False)
 
     username = serializers.CharField(
@@ -28,7 +30,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class EmailRegistrationSerializer(serializers.ModelSerializer):
-    """Сериализатор для преобразования данных при получении кода подтверждения."""
+    """
+    YamdbUser specific serializer for registration page
+    """
     password = PasswordField(required=False)
     username_field = 'email'
 
@@ -38,6 +42,9 @@ class EmailRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserVerificationSerializer(serializers.ModelSerializer):
+    """
+    YamdbUser specific serializer for activation page
+    """
     password = PasswordField(required=False)
     confirmation_code = serializers.CharField(write_only=True)
     is_active = serializers.BooleanField(required=False)

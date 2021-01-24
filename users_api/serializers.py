@@ -1,5 +1,8 @@
+import re
+
+from django.core.validators import EmailValidator
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+from rest_framework.validators import UniqueValidator, ValidationError
 from rest_framework_simplejwt.serializers import PasswordField
 
 from users_api.models import YamdbUser
@@ -25,7 +28,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = YamdbUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'bio', 'role', ]
+        fields = [
+            'username', 'first_name', 'last_name', 'email', 'bio', 'role',
+        ]
         lookup_field = 'username'
 
 
@@ -45,11 +50,17 @@ class UserVerificationSerializer(serializers.ModelSerializer):
     """
     YamdbUser specific serializer for activation page
     """
-    password = PasswordField(required=False)
-    confirmation_code = serializers.CharField(write_only=True)
-    is_active = serializers.BooleanField(required=False)
-    username_field = 'email'
+    confirmation_code = serializers.CharField()
+    email = serializers.EmailField(
+        validators=[EmailValidator(), ]
+    )
 
     class Meta:
         model = YamdbUser
-        fields = ['email', 'password', 'confirmation_code', 'is_active']
+        fields = ['email', 'confirmation_code', ]
+
+    def validate_confirmation_code(self, value):
+        regex = r'\w{6}-\w{32}'
+        if re.fullmatch(regex, value):
+            return value
+        raise ValidationError('The confirmation_code format is wrong')

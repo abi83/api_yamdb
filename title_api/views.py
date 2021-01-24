@@ -9,10 +9,9 @@ from rest_framework import viewsets, permissions, filters
 from title_api.filters import TitleFilter
 from title_api.models import Review, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
-from title_api.serializers import (ReviewSerializer, CommentSerializer,
-                                   TitlePostSerializer, TitleViewSerializer,
-                                   CategorySerializer,
-                                   GenreSerializer)
+from title_api.serializers import (
+    ReviewSerializer, CommentSerializer, TitlePostSerializer,
+    TitleViewSerializer, CategorySerializer, GenreSerializer)
 from users_api.permissions import IsYamdbAdmin, IsYamdbModerator, YamdbReadOnly
 
 

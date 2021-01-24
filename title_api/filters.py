@@ -1,10 +1,10 @@
 from django_filters.rest_framework import CharFilter, FilterSet, NumberFilter
 
-from .models import Title
+from title_api.models import Title
 
 
 class TitleFilter(FilterSet):
-    """Фильтрация произведений по get параметрам"""
+    """Title get params filtration"""
     category = CharFilter(field_name='category', lookup_expr='slug')
     genre = CharFilter(field_name='genre', lookup_expr='slug')
     name = CharFilter(field_name='name', lookup_expr='icontains')

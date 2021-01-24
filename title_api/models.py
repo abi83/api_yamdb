@@ -8,7 +8,7 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    """Категории (типы) произведений"""
+    """Title's categories"""
     name = models.CharField(
         max_length=200, unique=True,
         verbose_name='Category name'
@@ -30,7 +30,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    """Жанры"""
+    """Title's genre"""
     name = models.CharField(max_length=80)
     slug = models.SlugField(unique=True, null=True)
 
@@ -80,7 +80,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    """Отзывы на произведения"""
+    """Title's reviews with rating score"""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

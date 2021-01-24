@@ -11,8 +11,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from users_api.models import YamdbUser
 from users_api.permissions import IsYamdbAdmin
-from users_api.serializers import UserSerializer, \
-    EmailRegistrationSerializer, UserVerificationSerializer
+from users_api.serializers import (
+    UserSerializer, EmailRegistrationSerializer, UserVerificationSerializer)
 
 
 class CreateUser(generics.CreateAPIView):
@@ -46,24 +46,25 @@ class ConfirmUser(generics.UpdateAPIView):
         )
 
     def post(self, request):
-        token = request.data.get('confirmation_code')
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                        {'Error': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST,
+                        content_type='application/json',
+                    )
         user = self.get_object()
-        check = default_token_generator.check_token(user, token)
+        code = request.data.get('confirmation_code')
+
+        user.is_active = True
+        user.save()
+        check = default_token_generator.check_token(user, code)
         if not check:
             return Response(
                 {'Error': 'Confirmation code for this email is wrong'},
                 status=status.HTTP_401_UNAUTHORIZED,
                 content_type='application/json',
             )
-
-        request.data._mutable = True
-        request.data['is_active'] = True
-        request.data._mutable = False
-
-        serializer = self.get_serializer(user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
         token = AccessToken.for_user(user)
         return Response(
             data={'token': str(token)},

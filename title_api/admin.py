@@ -1,5 +1,6 @@
-from title_api.models import Category, Genre, Title, Review, Comment
 from django.contrib import admin
+
+from title_api.models import Category, Genre, Title, Review, Comment
 
 
 @admin.register(Category)
@@ -25,4 +26,3 @@ class ReviewAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     pass
-

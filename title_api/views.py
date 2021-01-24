@@ -5,14 +5,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import viewsets, permissions, filters
-from rest_framework.viewsets import ViewSetMixin
 
 from title_api.filters import TitleFilter
-from title_api.models import Review, Comment, Title, Category, Genre
+from title_api.models import Review, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
-from title_api.serializers import (ReviewSerializer, CommentSerializer,
-                                   TitlePostSerializer, TitleViewSerializer, CategorySerializer,
-                                   GenreSerializer)
+from title_api.serializers import (
+    ReviewSerializer, CommentSerializer, TitlePostSerializer,
+    TitleViewSerializer, CategorySerializer, GenreSerializer)
 from users_api.permissions import IsYamdbAdmin, IsYamdbModerator, YamdbReadOnly
 
 
@@ -53,16 +52,20 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        return Comment.objects.filter(review=review_id)
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        return review.comments.all()
 
     def perform_create(self, serializer):
-        review_id = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        serializer.save(author=self.request.user, review=review_id)
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('name', 'year')
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+    ).order_by(
+        'name', 'year'
+    )
     permission_classes = [
         YamdbReadOnly | IsYamdbAdmin
     ]

@@ -5,13 +5,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import viewsets, permissions, filters
-from rest_framework.viewsets import ViewSetMixin
 
 from title_api.filters import TitleFilter
-from title_api.models import Review, Comment, Title, Category, Genre
+from title_api.models import Review, Title, Category, Genre
 from title_api.permissions import AuthorPermissions
 from title_api.serializers import (ReviewSerializer, CommentSerializer,
-                                   TitlePostSerializer, TitleViewSerializer, CategorySerializer,
+                                   TitlePostSerializer, TitleViewSerializer,
+                                   CategorySerializer,
                                    GenreSerializer)
 from users_api.permissions import IsYamdbAdmin, IsYamdbModerator, YamdbReadOnly
 

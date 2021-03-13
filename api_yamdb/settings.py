@@ -68,7 +68,7 @@ WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://212.164.39.208",
+    "http://212.164.39.208:3000",
     "http://localhost:3000",
     "http://127.0.0.1"
 ]

@@ -13,7 +13,8 @@ RUN pip3 install -r /code/requirements.txt
 # скопировать всё содержимое директории, в которой лежит докерфайл, в директорию /code
 COPY . /code
 
-# при старте контейнера выполнить runserver
-CMD python /code/manage.py runserver 0:8000
+WORKDIR /code
+
+CMD gunicorn api_yamdb.wsgi:application --bind 0.0.0.0:8000
 
 LABEL author='Wladimir Kromm' version=1.0

@@ -25,5 +25,5 @@ urllib3==1.26.4
 django-cors-headers
 
 
-gunicorn==20.1.0
-psycopg2-binary==2.8.6
+factory_boy
+Faker

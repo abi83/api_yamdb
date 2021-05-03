@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils.timezone import now
 
 from title_api.utils import year_validator
 
@@ -8,7 +9,9 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    """Title's categories"""
+    """
+    Title's category
+    """
     name = models.CharField(
         max_length=200, unique=True,
         verbose_name='Category name'
@@ -30,7 +33,9 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    """Title's genre"""
+    """
+    Title's genres
+    """
     name = models.CharField(max_length=80)
     slug = models.SlugField(unique=True, null=True)
 
@@ -42,7 +47,9 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    """Заглавие"""
+    """
+    Work of fiction: film, book or music album:
+    """
     name = models.TextField(
         max_length=100, db_index=True
     )
@@ -72,21 +79,23 @@ class Title(models.Model):
 
     class Meta:
         ordering = ['name', 'year']
-        verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'
+        verbose_name = 'Title'
+        verbose_name_plural = 'Titles'
 
     def __str__(self):
         return self.name
 
 
 class Review(models.Model):
-    """Title's reviews with rating score"""
+    """
+    Title's reviews with rating score
+    """
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='reviews',
     )
-    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
+    pub_date = models.DateTimeField('Publication date', default=now)
     score = models.IntegerField(
         blank=True,
         validators=[
@@ -111,7 +120,9 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    """Комментарии"""
+    """
+    Review comments
+    """
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -127,7 +138,7 @@ class Comment(models.Model):
         unique=False
     )
     text = models.TextField()
-    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
+    pub_date = models.DateTimeField('Publication date', default=now)
 
     class Meta:
         ordering = ['author']

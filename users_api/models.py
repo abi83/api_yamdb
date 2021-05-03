@@ -57,9 +57,9 @@ class YamdbUser(AbstractUser):
     """
 
     class Role(models.TextChoices):
-        USER = 'user'
-        MODERATOR = 'moderator'
-        ADMIN = 'admin'
+        USER = ('usr', 'user')
+        MODERATOR = ('mod', 'moderator')
+        ADMIN = ('adm', 'admin')
 
     bio = models.TextField(max_length=255, blank=True,
                            verbose_name='Users biography')
